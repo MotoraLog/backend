@@ -11,6 +11,23 @@ type EnvConfig = {
 
 let cachedEnv: EnvConfig | null = null;
 
+function parseBooleanEnv(value: string | undefined, defaultValue: boolean) {
+  if (value == null) {
+    return defaultValue;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (['true', '1', 'yes', 'on'].includes(normalized)) {
+    return true;
+  }
+
+  if (['false', '0', 'no', 'off'].includes(normalized)) {
+    return false;
+  }
+
+  return defaultValue;
+}
+
 export function getEnv(): EnvConfig {
   if (cachedEnv) {
     return cachedEnv;
@@ -20,7 +37,7 @@ export function getEnv(): EnvConfig {
   const jwtSecret = process.env.JWT_SECRET;
   const accessTokenTtlMinutes = Number(process.env.ACCESS_TOKEN_TTL_MINUTES ?? 15);
   const refreshTokenTtlDays = Number(process.env.REFRESH_TOKEN_TTL_DAYS ?? 7);
-  const allowPublicRegistration = process.env.ALLOW_PUBLIC_REGISTRATION === 'true';
+  const allowPublicRegistration = parseBooleanEnv(process.env.ALLOW_PUBLIC_REGISTRATION, false);
   const appSetupToken = process.env.APP_SETUP_TOKEN;
 
   if (!mongoUri) {

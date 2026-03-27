@@ -39,6 +39,39 @@ export function handleApiError(error: unknown) {
     );
   }
 
+  if (error instanceof Error && error.name === 'MongooseServerSelectionError') {
+    return NextResponse.json(
+      {
+        error: {
+          message: 'Database connection failed. Check MONGODB_URI and network access.',
+          code: 'DB_UNAVAILABLE',
+          details: null
+        }
+      },
+      { status: 503 }
+    );
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'name' in error &&
+    (error as { name?: string }).name === 'MongoServerError' &&
+    'code' in error &&
+    (error as { code?: number }).code === 13
+  ) {
+    return NextResponse.json(
+      {
+        error: {
+          message: 'Database authorization failed. Check database user permissions and DB name in MONGODB_URI.',
+          code: 'DB_AUTH_FAILED',
+          details: null
+        }
+      },
+      { status: 500 }
+    );
+  }
+
   if (
     typeof error === 'object' &&
     error !== null &&
