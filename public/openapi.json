@@ -1,0 +1,1495 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Vehicle Maintenance Backend API",
+    "version": "0.2.0",
+    "description": "API serverless para autenticação, veículos, hodômetro, abastecimentos, manutenções e lembretes."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Desenvolvimento local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
+              "details": {}
+            },
+            "required": [
+              "message",
+              "code",
+              "details"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "totalItems": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalPages": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name"
+        ]
+      },
+      "Tokens": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "plate": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "currentOdometerKm": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "description",
+          "plate",
+          "category",
+          "currentOdometerKm"
+        ]
+      },
+      "FuelEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "vehicleId": {
+            "type": "string"
+          },
+          "odometerKm": {
+            "type": "number"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "fuelType": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "totalPrice": {
+            "type": "number"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recordedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "vehicleId",
+          "odometerKm",
+          "unitPrice",
+          "fuelType",
+          "quantity",
+          "totalPrice"
+        ]
+      },
+      "MaintenanceEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "vehicleId": {
+            "type": "string"
+          },
+          "maintenanceType": {
+            "type": "string"
+          },
+          "odometerKm": {
+            "type": "number"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "performedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "vehicleId",
+          "maintenanceType",
+          "odometerKm"
+        ]
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "vehicleId": {
+            "type": "string"
+          },
+          "reminderText": {
+            "type": "string"
+          },
+          "currentOdometerKm": {
+            "type": "number"
+          },
+          "mileageIntervalKm": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "remindAtOdometerKm": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "monthInterval": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "remindAtDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "dueState": {
+            "type": "object",
+            "properties": {
+              "dueByMileage": {
+                "type": "boolean"
+              },
+              "dueByDate": {
+                "type": "boolean"
+              },
+              "isDue": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "dueByMileage",
+              "dueByDate",
+              "isDue"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "vehicleId",
+          "reminderText",
+          "currentOdometerKm",
+          "status",
+          "dueState"
+        ]
+      }
+    },
+    "examples": {
+      "RegisterRequest": {
+        "summary": "Cadastro de usuario",
+        "value": {
+          "name": "Gilberto",
+          "email": "gilberto@example.com",
+          "password": "supersecret123"
+        }
+      },
+      "AuthSuccessResponse": {
+        "summary": "Resposta de autenticacao",
+        "value": {
+          "data": {
+            "user": {
+              "id": "67ea9f3f4e4f2f0012ab34cd",
+              "email": "gilberto@example.com",
+              "name": "Gilberto"
+            },
+            "tokens": {
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh"
+            }
+          }
+        }
+      },
+      "VehicleCreateRequest": {
+        "summary": "Criacao de veiculo",
+        "value": {
+          "description": "Civic Touring 2020",
+          "plate": "ABC1D23",
+          "category": "car",
+          "currentOdometerKm": 102350
+        }
+      },
+      "VehicleListResponse": {
+        "summary": "Lista paginada de veiculos",
+        "value": {
+          "data": {
+            "vehicles": [
+              {
+                "id": "67ea9f3f4e4f2f0012ab3411",
+                "userId": "67ea9f3f4e4f2f0012ab34cd",
+                "description": "Civic Touring 2020",
+                "plate": "ABC1D23",
+                "category": "car",
+                "currentOdometerKm": 102350,
+                "createdAt": "2026-03-27T12:00:00.000Z",
+                "updatedAt": "2026-03-27T12:30:00.000Z"
+              }
+            ]
+          },
+          "meta": {
+            "page": 1,
+            "pageSize": 20,
+            "totalItems": 1,
+            "totalPages": 1
+          }
+        }
+      },
+      "OdometerUpdateRequest": {
+        "summary": "Atualizacao de hodometro",
+        "value": {
+          "odometerKm": 102800,
+          "recordedAt": "2026-03-27T14:10:00.000Z"
+        }
+      },
+      "FuelEntryCreateRequest": {
+        "summary": "Registro de abastecimento",
+        "value": {
+          "odometerKm": 102800,
+          "unitPrice": 5.79,
+          "fuelType": "Gasolina Comum",
+          "quantity": 34.12,
+          "notes": "Posto X",
+          "recordedAt": "2026-03-27T14:20:00.000Z"
+        }
+      },
+      "FuelEntryCreateResponse": {
+        "summary": "Abastecimento criado",
+        "value": {
+          "data": {
+            "fuelEntry": {
+              "id": "67ea9f3f4e4f2f0012ab35aa",
+              "userId": "67ea9f3f4e4f2f0012ab34cd",
+              "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+              "odometerKm": 102800,
+              "unitPrice": 5.79,
+              "fuelType": "Gasolina Comum",
+              "quantity": 34.12,
+              "totalPrice": 197.55,
+              "notes": "Posto X",
+              "recordedAt": "2026-03-27T14:20:00.000Z",
+              "createdAt": "2026-03-27T14:20:05.000Z"
+            },
+            "vehicle": {
+              "id": "67ea9f3f4e4f2f0012ab3411",
+              "userId": "67ea9f3f4e4f2f0012ab34cd",
+              "description": "Civic Touring 2020",
+              "plate": "ABC1D23",
+              "category": "car",
+              "currentOdometerKm": 102800,
+              "createdAt": "2026-03-27T12:00:00.000Z",
+              "updatedAt": "2026-03-27T14:20:05.000Z"
+            }
+          }
+        }
+      },
+      "MaintenanceEntryCreateRequest": {
+        "summary": "Registro de manutencao",
+        "value": {
+          "maintenanceType": "oleo e filtro",
+          "notes": "Troca de oleo e filtro no posto Y",
+          "performedAt": "2026-03-27T15:00:00.000Z"
+        }
+      },
+      "ReminderCreateRequest": {
+        "summary": "Criacao de lembrete",
+        "value": {
+          "reminderText": "Trocar oleo em 5.000 km",
+          "mileageIntervalKm": 5000,
+          "monthInterval": 6
+        }
+      },
+      "ReminderListResponse": {
+        "summary": "Lista de lembretes paginada",
+        "value": {
+          "data": {
+            "reminders": [
+              {
+                "id": "67ea9f3f4e4f2f0012ab3666",
+                "userId": "67ea9f3f4e4f2f0012ab34cd",
+                "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+                "reminderText": "Trocar oleo em 5.000 km",
+                "currentOdometerKm": 102800,
+                "mileageIntervalKm": 5000,
+                "remindAtOdometerKm": 107800,
+                "monthInterval": 6,
+                "remindAtDate": "2026-09-27T00:00:00.000Z",
+                "status": "active",
+                "createdAt": "2026-03-27T15:05:00.000Z",
+                "updatedAt": "2026-03-27T15:05:00.000Z",
+                "dueState": {
+                  "dueByMileage": false,
+                  "dueByDate": false,
+                  "isDue": false
+                }
+              }
+            ]
+          },
+          "meta": {
+            "page": 1,
+            "pageSize": 20,
+            "totalItems": 1,
+            "totalPages": 1
+          }
+        }
+      },
+      "ErrorUnauthorized": {
+        "summary": "Erro de autenticacao",
+        "value": {
+          "error": {
+            "message": "Missing or invalid Authorization header.",
+            "code": "UNAUTHORIZED",
+            "details": null
+          }
+        }
+      },
+      "ErrorValidation": {
+        "summary": "Erro de validacao",
+        "value": {
+          "error": {
+            "message": "Validation failed.",
+            "code": "VALIDATION_ERROR",
+            "details": {
+              "formErrors": [],
+              "fieldErrors": {
+                "email": [
+                  "Invalid email"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Status da API"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Cria um novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/RegisterRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        },
+                        "tokens": {
+                          "$ref": "#/components/schemas/Tokens"
+                        }
+                      },
+                      "required": [
+                        "user",
+                        "tokens"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/AuthSuccessResponse"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email duplicado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "duplicate": {
+                    "$ref": "#/components/examples/ErrorValidation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Autentica usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "email": "gilberto@example.com",
+                    "password": "supersecret123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Login realizado",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/AuthSuccessResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "unauthorized": {
+                    "$ref": "#/components/examples/ErrorUnauthorized"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "summary": "Renova os tokens de autenticação",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "refreshToken"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tokens renovados",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/AuthSuccessResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Retorna o usuário autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário atual",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "user": {
+                          "id": "67ea9f3f4e4f2f0012ab34cd",
+                          "email": "gilberto@example.com",
+                          "name": "Gilberto"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "unauthorized": {
+                    "$ref": "#/components/examples/ErrorUnauthorized"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vehicles": {
+      "get": {
+        "summary": "Lista veículos com paginação e busca",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de veículos paginada",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/VehicleListResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um veículo",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "plate": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string",
+                    "default": "car"
+                  },
+                  "currentOdometerKm": {
+                    "type": "number",
+                    "default": 0
+                  }
+                },
+                "required": [
+                  "description",
+                  "plate"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/VehicleCreateRequest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Veículo criado",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "vehicle": {
+                          "id": "67ea9f3f4e4f2f0012ab3411",
+                          "userId": "67ea9f3f4e4f2f0012ab34cd",
+                          "description": "Civic Touring 2020",
+                          "plate": "ABC1D23",
+                          "category": "car",
+                          "currentOdometerKm": 102350,
+                          "createdAt": "2026-03-27T12:00:00.000Z",
+                          "updatedAt": "2026-03-27T12:30:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vehicles/{vehicleId}": {
+      "parameters": [
+        {
+          "name": "vehicleId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Retorna um veículo",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo"
+          },
+          "404": {
+            "description": "Veículo não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Atualiza parcialmente um veículo",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo atualizado"
+          },
+          "409": {
+            "description": "Regressão de hodômetro"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um veículo",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo removido"
+          }
+        }
+      }
+    },
+    "/api/vehicles/{vehicleId}/odometer": {
+      "post": {
+        "summary": "Atualiza a quilometragem do veículo",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Hodômetro atualizado",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "vehicle": {
+                          "id": "67ea9f3f4e4f2f0012ab3411",
+                          "userId": "67ea9f3f4e4f2f0012ab34cd",
+                          "description": "Civic Touring 2020",
+                          "plate": "ABC1D23",
+                          "category": "car",
+                          "currentOdometerKm": 102800
+                        },
+                        "odometerUpdate": {
+                          "id": "67ea9f3f4e4f2f0012ab3800",
+                          "userId": "67ea9f3f4e4f2f0012ab34cd",
+                          "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+                          "odometerKm": 102800,
+                          "recordedAt": "2026-03-27T14:10:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Regressão de hodômetro"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/OdometerUpdateRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vehicles/{vehicleId}/fuel-entries": {
+      "get": {
+        "summary": "Lista abastecimentos com paginação e filtros",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "fuelType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abastecimentos listados",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "fuelEntries": [
+                          {
+                            "id": "67ea9f3f4e4f2f0012ab35aa",
+                            "userId": "67ea9f3f4e4f2f0012ab34cd",
+                            "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+                            "odometerKm": 102800,
+                            "unitPrice": 5.79,
+                            "fuelType": "Gasolina Comum",
+                            "quantity": 34.12,
+                            "totalPrice": 197.55,
+                            "notes": "Posto X",
+                            "recordedAt": "2026-03-27T14:20:00.000Z",
+                            "createdAt": "2026-03-27T14:20:05.000Z"
+                          }
+                        ]
+                      },
+                      "meta": {
+                        "page": 1,
+                        "pageSize": 20,
+                        "totalItems": 1,
+                        "totalPages": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um abastecimento",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Abastecimento criado",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/FuelEntryCreateResponse"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Quilometragem inválida"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/FuelEntryCreateRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vehicles/{vehicleId}/maintenance-entries": {
+      "get": {
+        "summary": "Lista manutenções com paginação e filtros",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "maintenanceType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Manutenções listadas",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "maintenanceEntries": [
+                          {
+                            "id": "67ea9f3f4e4f2f0012ab3901",
+                            "userId": "67ea9f3f4e4f2f0012ab34cd",
+                            "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+                            "maintenanceType": "oleo e filtro",
+                            "odometerKm": 102800,
+                            "notes": "Troca preventiva",
+                            "performedAt": "2026-03-27T15:00:00.000Z",
+                            "createdAt": "2026-03-27T15:00:05.000Z"
+                          }
+                        ]
+                      },
+                      "meta": {
+                        "page": 1,
+                        "pageSize": 20,
+                        "totalItems": 1,
+                        "totalPages": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma manutenção",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Manutenção criada",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "maintenanceEntry": {
+                          "id": "67ea9f3f4e4f2f0012ab3901",
+                          "userId": "67ea9f3f4e4f2f0012ab34cd",
+                          "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+                          "maintenanceType": "oleo e filtro",
+                          "odometerKm": 102800,
+                          "notes": "Troca preventiva",
+                          "performedAt": "2026-03-27T15:00:00.000Z",
+                          "createdAt": "2026-03-27T15:00:05.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/MaintenanceEntryCreateRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/vehicles/{vehicleId}/reminders": {
+      "get": {
+        "summary": "Lista lembretes com paginação e filtros",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "due",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lembretes listados",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/ReminderListResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um lembrete",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Lembrete criado",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "success": {
+                    "value": {
+                      "data": {
+                        "reminder": {
+                          "id": "67ea9f3f4e4f2f0012ab3666",
+                          "userId": "67ea9f3f4e4f2f0012ab34cd",
+                          "vehicleId": "67ea9f3f4e4f2f0012ab3411",
+                          "reminderText": "Trocar oleo em 5.000 km",
+                          "currentOdometerKm": 102800,
+                          "mileageIntervalKm": 5000,
+                          "remindAtOdometerKm": 107800,
+                          "monthInterval": 6,
+                          "remindAtDate": "2026-09-27T00:00:00.000Z",
+                          "status": "active",
+                          "createdAt": "2026-03-27T15:05:00.000Z",
+                          "updatedAt": "2026-03-27T15:05:00.000Z",
+                          "dueState": {
+                            "dueByMileage": false,
+                            "dueByDate": false,
+                            "isDue": false
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "default": {
+                  "$ref": "#/components/examples/ReminderCreateRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
