@@ -5,6 +5,8 @@ type EnvConfig = {
   jwtSecret: string;
   accessTokenTtlMinutes: number;
   refreshTokenTtlDays: number;
+  allowPublicRegistration: boolean;
+  appSetupToken?: string;
 };
 
 let cachedEnv: EnvConfig | null = null;
@@ -18,6 +20,8 @@ export function getEnv(): EnvConfig {
   const jwtSecret = process.env.JWT_SECRET;
   const accessTokenTtlMinutes = Number(process.env.ACCESS_TOKEN_TTL_MINUTES ?? 15);
   const refreshTokenTtlDays = Number(process.env.REFRESH_TOKEN_TTL_DAYS ?? 7);
+  const allowPublicRegistration = process.env.ALLOW_PUBLIC_REGISTRATION === 'true';
+  const appSetupToken = process.env.APP_SETUP_TOKEN;
 
   if (!mongoUri) {
     throw new AppError('Missing MONGODB_URI environment variable.', 500);
@@ -31,7 +35,9 @@ export function getEnv(): EnvConfig {
     mongoUri,
     jwtSecret,
     accessTokenTtlMinutes,
-    refreshTokenTtlDays
+    refreshTokenTtlDays,
+    allowPublicRegistration,
+    appSetupToken
   };
 
   return cachedEnv;

@@ -27,6 +27,8 @@ MONGODB_URI=
 JWT_SECRET=
 ACCESS_TOKEN_TTL_MINUTES=15
 REFRESH_TOKEN_TTL_DAYS=7
+ALLOW_PUBLIC_REGISTRATION=false
+APP_SETUP_TOKEN=
 ```
 
 ## Instalação
@@ -65,7 +67,7 @@ npm run test
 
 ### Auth
 
-- `POST /api/auth/register`
+- `POST /api/auth/register` (exige header `x-app-setup-token` quando cadastro público estiver desabilitado)
 - `POST /api/auth/login`
 - `POST /api/auth/refresh`
 - `GET /api/auth/me`
@@ -97,6 +99,8 @@ npm run test
 ## Regras Atuais
 
 - Login JWT com refresh token
+- Cadastro público desabilitado por padrão
+- Provisionamento de usuários protegido por `x-app-setup-token`
 - Isolamento de dados por usuário
 - Cadastro de veículo com descrição, placa, categoria e hodômetro atual
 - Bloqueio de regressão de hodômetro
@@ -140,3 +144,25 @@ A cobertura atual inclui:
 - adicionar endpoints de concluir/cancelar lembretes
 - expandir exemplos e documentação por endpoint
 - adicionar mais testes de cenários negativos para PATCH/DELETE de veículo
+
+## Provisionamento de Usuário (Seguro)
+
+Por padrão, o cadastro não fica aberto publicamente.
+
+Use uma destas opções:
+
+- Manter `ALLOW_PUBLIC_REGISTRATION=false` e definir `APP_SETUP_TOKEN`; nesse caso envie `x-app-setup-token` em `POST /api/auth/register`.
+- Definir `ALLOW_PUBLIC_REGISTRATION=true` somente em ambientes controlados onde cadastro aberto seja aceitável.
+
+Exemplo de curl com setup token:
+
+```bash
+curl -X POST "https://SEU-PROJETO.vercel.app/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -H "x-app-setup-token: SEU_APP_SETUP_TOKEN" \
+  -d '{
+    "name": "Seu Nome",
+    "email": "seu-email@exemplo.com",
+    "password": "SuaSenhaForte123!"
+  }'
+```

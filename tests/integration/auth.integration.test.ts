@@ -3,12 +3,12 @@ import { POST as loginPost } from '@/app/api/auth/login/route';
 import { POST as refreshPost } from '@/app/api/auth/refresh/route';
 import { POST as registerPost } from '@/app/api/auth/register/route';
 
-import { createJsonRequest, readJson, setAuthToken } from '@/../tests/helpers/http';
+import { createJsonRequest, createRegisterRequest, readJson, setAuthToken } from '@/../tests/helpers/http';
 
 describe('auth integration', () => {
   it('registers, reads current user, and refreshes tokens', async () => {
     const registerResponse = await registerPost(
-      createJsonRequest('http://test/api/auth/register', 'POST', {
+      createRegisterRequest('http://test/api/auth/register', {
         name: 'Gilberto',
         email: 'USER@example.com',
         password: 'supersecret123'
@@ -49,7 +49,7 @@ describe('auth integration', () => {
 
   it('returns structured errors for duplicate registration and invalid login', async () => {
     await registerPost(
-      createJsonRequest('http://test/api/auth/register', 'POST', {
+      createRegisterRequest('http://test/api/auth/register', {
         name: 'Gilberto',
         email: 'user@example.com',
         password: 'supersecret123'
@@ -57,7 +57,7 @@ describe('auth integration', () => {
     );
 
     const duplicateResponse = await registerPost(
-      createJsonRequest('http://test/api/auth/register', 'POST', {
+      createRegisterRequest('http://test/api/auth/register', {
         name: 'Gilberto',
         email: 'user@example.com',
         password: 'supersecret123'

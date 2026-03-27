@@ -8,11 +8,11 @@ import {
 } from '@/app/api/vehicles/[vehicleId]/maintenance-entries/route';
 import { GET as remindersGet, POST as remindersPost } from '@/app/api/vehicles/[vehicleId]/reminders/route';
 
-import { createJsonRequest, readJson, setAuthToken, vehicleContext } from '@/../tests/helpers/http';
+import { createJsonRequest, createRegisterRequest, readJson, setAuthToken, vehicleContext } from '@/../tests/helpers/http';
 
 async function createAuthorizedVehicle() {
   const registerResponse = await registerPost(
-    createJsonRequest('http://test/api/auth/register', 'POST', {
+    createRegisterRequest('http://test/api/auth/register', {
       name: 'Gilberto',
       email: 'records@example.com',
       password: 'supersecret123'

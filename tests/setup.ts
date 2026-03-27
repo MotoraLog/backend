@@ -17,6 +17,8 @@ beforeAll(async () => {
   process.env.JWT_SECRET = 'test-secret-key';
   process.env.ACCESS_TOKEN_TTL_MINUTES = '15';
   process.env.REFRESH_TOKEN_TTL_DAYS = '7';
+  process.env.ALLOW_PUBLIC_REGISTRATION = 'true';
+  process.env.APP_SETUP_TOKEN = 'test-setup-token';
 });
 
 afterEach(async () => {

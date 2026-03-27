@@ -1,12 +1,24 @@
 import { NextRequest } from 'next/server';
 
-export function createJsonRequest(url: string, method: string, body?: unknown) {
+export function createJsonRequest(
+  url: string,
+  method: string,
+  body?: unknown,
+  headers?: Record<string, string>
+) {
   return new NextRequest(url, {
     method,
     headers: {
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      ...(headers ?? {})
     },
     body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+export function createRegisterRequest(url: string, body: unknown) {
+  return createJsonRequest(url, 'POST', body, {
+    'x-app-setup-token': process.env.APP_SETUP_TOKEN ?? ''
   });
 }
 

@@ -2,11 +2,11 @@ import { GET as vehicleGet, POST as vehiclePost } from '@/app/api/vehicles/route
 import { GET as vehicleDetailGet } from '@/app/api/vehicles/[vehicleId]/route';
 import { POST as registerPost } from '@/app/api/auth/register/route';
 
-import { createJsonRequest, readJson, setAuthToken, vehicleContext } from '@/../tests/helpers/http';
+import { createJsonRequest, createRegisterRequest, readJson, setAuthToken, vehicleContext } from '@/../tests/helpers/http';
 
 async function registerUser(email: string) {
   const response = await registerPost(
-    createJsonRequest('http://test/api/auth/register', 'POST', {
+    createRegisterRequest('http://test/api/auth/register', {
       name: 'Gilberto',
       email,
       password: 'supersecret123'

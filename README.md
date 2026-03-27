@@ -27,6 +27,8 @@ MONGODB_URI=
 JWT_SECRET=
 ACCESS_TOKEN_TTL_MINUTES=15
 REFRESH_TOKEN_TTL_DAYS=7
+ALLOW_PUBLIC_REGISTRATION=false
+APP_SETUP_TOKEN=
 ```
 
 ## Installation
@@ -65,7 +67,7 @@ npm run test
 
 ### Auth
 
-- `POST /api/auth/register`
+- `POST /api/auth/register` (requires `x-app-setup-token` header when public registration is disabled)
 - `POST /api/auth/login`
 - `POST /api/auth/refresh`
 - `GET /api/auth/me`
@@ -97,6 +99,8 @@ npm run test
 ## Current Rules
 
 - JWT login and refresh tokens
+- Public registration is disabled by default
+- User provisioning can be protected with `x-app-setup-token`
 - User-level data isolation
 - Vehicle creation with description, plate, category, and current odometer
 - Odometer regression prevention
@@ -140,3 +144,25 @@ Current coverage includes:
 - add reminder completion/cancellation endpoints
 - extend endpoint-level examples/documentation
 - add more negative-case tests for vehicle PATCH/DELETE
+
+## User Provisioning (Secure)
+
+By default, user registration is not publicly open.
+
+Use one of the options below:
+
+- Keep `ALLOW_PUBLIC_REGISTRATION=false` and set `APP_SETUP_TOKEN`; then send `x-app-setup-token` in `POST /api/auth/register`.
+- Set `ALLOW_PUBLIC_REGISTRATION=true` only in controlled environments where open registration is acceptable.
+
+Example curl with setup token:
+
+```bash
+curl -X POST "https://YOUR-PROJECT.vercel.app/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -H "x-app-setup-token: YOUR_APP_SETUP_TOKEN" \
+  -d '{
+    "name": "Your Name",
+    "email": "you@example.com",
+    "password": "YourStrongPassword123!"
+  }'
+```
